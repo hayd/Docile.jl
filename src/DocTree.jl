@@ -369,7 +369,19 @@ end
 Returns all documentation for an expression `expr` evaluated in module `mod` as a vector of
 `Node`s.
 """
-getdocs(mod, expr) = getdocs(mod, eval(mod, :(@doc $expr)))
+function getdocs(mod, expr::Union{Expr, Symbol})
+    content = [eval(mod, :(@doc $expr))
+    md = getdocs(mod, eval(mod, :(@doc $expr)))
+    println(md)
+    content = isa(md, Markdown.MD) ? md.content : md  # Array?
+    println(typeof(content[1].chunks[1]))
+    println(typeof(content[1].modref))
+    #md = filter(x -> startswith("/Users/andy/.julia/v0.5/Docile" , x.meta[:path]), content)
+    println(md)
+    md
+end
+
+#getdocs(mod, expr::Void) = [Node("hi")] #(println(mod); println(expr); error())
 
 # Auto convert standard docs to directive docs.
 getdocs(mod, md :: Markdown.MD) = [Node(stringmime("text/markdown", md), mod)]
